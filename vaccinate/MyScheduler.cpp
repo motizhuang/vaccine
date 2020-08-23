@@ -132,9 +132,11 @@ bool MyScheduler::name_is_factory(std::string name){
   return false; 
 }
 unsigned int MyScheduler::total_doses(std::string name){//updating the total vaccines in the city 
-  for(const auto& [routename,route]: correctroute)//trying to access routes. so if 
+  for(const auto& [routename,route]: correctroute){//trying to access routes. so if 
   if(name!=routename)//the last city in the chain won't have a correct route because correct route names go from start to end city. 
   return 0; 
+  (void) route; 
+}
   unsigned int total = mCities[correctroute[name]->in]->population; 
   return total+=total_doses(correctroute[name]->in);
 }
