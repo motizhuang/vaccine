@@ -63,13 +63,11 @@ void MyScheduler::set_route(){
     for(Route* edge : mCities[factories]->edges){
       //need name of city going to and the time it takes 
       iRoute info; 
-      if(edge->city1==factories){
       info.out=factories; 
-      info.in=edge->city2; }
-      else{
-        info.out=edge->city2; 
-        info.in = factories; 
-      }
+      if(edge->city1==factories)
+        info.in=edge->city2; 
+      else
+        info.in = edge->city1; 
       std::cout<<"route ends: "<<info.out<<'\n';
       info.totalDays = edge->days;  
       info.id = edge->id; 
