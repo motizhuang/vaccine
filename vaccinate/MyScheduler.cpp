@@ -68,7 +68,7 @@ void MyScheduler::set_route(){
         info.in=edge->city2; 
       else
         info.in = edge->city1; 
-      std::cout<<"route ends: "<<info.out<<'\n';
+      // std::cout<<"route ends: "<<info.out<<'\n';
       info.totalDays = edge->days;  
       info.id = edge->id; 
       possibleRoutes.push(new iRoute(info)); 
@@ -79,23 +79,29 @@ void MyScheduler::set_route(){
   while(!possibleRoutes.empty()){
     if(!in_city_two(possibleRoutes.top()->in)){
       namecheck.insert(possibleRoutes.top()->in);
+      std::string in = possibleRoutes.top()->in;
+      std::string out = possibleRoutes.top()->out; 
       correctroute[possibleRoutes.top()->out]=possibleRoutes.top();//does this guarantee? yeah, just checking the best after checking if already found best
-      std::cout<<"name of starting city: "<<possibleRoutes.top()->out<<'\n';
-      for(Route* edge : mCities[possibleRoutes.top()->in]->edges){//the city at the road we chose directs to 
+      // std::cout<<"name of starting city: "<<possibleRoutes.top()->out<<'\n';
+      // std::cout<<"name of ending city: "<<possibleRoutes.top()->in<<'\n';
+      for(Route* edge : mCities[in]->edges){//the city at the road we chose directs to 
         iRoute info; //need to make sure don't go backwards
-        if(edge->city1!=possibleRoutes.top()->out&&edge->city2!=possibleRoutes.top()->out){
+        // std::cout<<"name of city: "<<in<<'\n';
+        // std::cout<<"name of one end: "<<edge->city1<<'\n';
+        // std::cout<<"name of other end: "<<edge->city2<<'\n';
+        if(edge->city1!=out&&edge->city2!=out){
+        //   std::cout<<"name of city: "<<in<<'\n';
+        // std::cout<<"name of one end: "<<edge->city1<<'\n';
+        // std::cout<<"name of other end: "<<edge->city2<<'\n';
           //namecheck.insert(possibleRoutes.top()->in); //very suspicious, probably causes the while loop infinite or stops too early, espically if using for all routes
-          if(edge->city1==possibleRoutes.top()->in){
-            info.out=possibleRoutes.top()->in;
+          info.out=in; 
+          if(edge->city1==in)
             info.in = edge->city2; 
-          }
-          else {
-            info.out=edge->city2;
+          else 
             info.in =edge->city1; 
-          }
-        info.totalDays = edge->days+correctroute[possibleRoutes.top()->out]->totalDays;  
-        info.id = edge->id; 
-        possibleRoutes.push(new iRoute(info));
+          info.totalDays = edge->days+correctroute[out]->totalDays;  
+          info.id = edge->id; 
+          possibleRoutes.push(new iRoute(info));
         }
       }
       //nextcities.insert(possibleRoutes.top()->in); 
@@ -106,21 +112,21 @@ void MyScheduler::set_route(){
     else
       possibleRoutes.pop();
   }
-  for(const auto& [name,route]: correctroute){
-    std::cout<<"City names: "<<name<<'\n';
-    (void) route; 
-  }
-  std::cout<<"made it out"<<'\n';
-  for(std::string list : namecheck){
-    std::cout<<"names in namecheck"<<list<<'\n';
-  }
+  // for(const auto& [name,route]: correctroute){
+  //   //std::cout<<"City names: "<<name<<'\n';
+  //   (void) route; 
+  // }
+  // //std::cout<<"made it out"<<'\n';
+  // for(std::string list : namecheck){
+  //   //std::cout<<"names in namecheck"<<list<<'\n';
+  // }
 }
 bool MyScheduler::in_city_two(std::string name){
   for(std::string list : namecheck){
     if(list==name)
     return true; 
   }
-  std::cout<<"made it out in city two"<<'\n';
+  //std::cout<<"made it out in city two"<<'\n';
   return false; 
 }
 bool MyScheduler::name_is_factory(std::string name){
@@ -128,15 +134,17 @@ bool MyScheduler::name_is_factory(std::string name){
     if(name==factory)
     return true; 
   }
-  std::cout<<"made it out name is factory"<<'\n';
+  //std::cout<<"made it out name is factory"<<'\n';
   return false; 
 }
 unsigned int MyScheduler::total_doses(std::string name){//updating the total vaccines in the city 
   for(const auto& [routename,route]: correctroute){//trying to access routes. so if 
-  if(name!=routename)//the last city in the chain won't have a correct route because correct route names go from start to end city. 
-  return 0; 
-  (void) route; 
-}
+    if(name!=routename){//the last city in the chain won't have a correct route because correct route names go from start to end city. 
+      std::cout<<"made it to base case"<<'\n';
+      return 0; 
+    }
+    (void) route;
+  }
   unsigned int total = mCities[correctroute[name]->in]->population; 
   std::cout<<"made it out total doses"<<'\n';
   return total+=total_doses(correctroute[name]->in);
