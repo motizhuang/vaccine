@@ -18,6 +18,7 @@ class MyScheduler: public Scheduler {
     bool          factory;
     unsigned int  vaccines;
   };
+  
   struct iRoute{
     std::string out; 
     std::string in; 
@@ -49,6 +50,7 @@ public:
   std::map<std::string, unsigned int> cities,
   std::vector<std::string>            factories,
   std::vector<Route>                  routes); 
+  //City(std::string name, unsigned int population);
   // Destructor?
 
   // Required Member Function
