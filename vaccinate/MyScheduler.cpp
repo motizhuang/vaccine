@@ -16,6 +16,17 @@ Scheduler* Scheduler::create(
 {
   return new MyScheduler(deadline,cities,factories,routes);
 }
+MyScheduler::~MyScheduler(){
+  for(const auto& [name,city] : mCities){
+    (void) name; 
+    for(iRoute* route: city->correctroute)
+      delete route; 
+    delete city; 
+  }
+  for(const auto& route: mRoutes){
+    delete route; 
+  }
+}
 MyScheduler::MyScheduler(unsigned int deadline,
 std::map<std::string, unsigned int> cities,
   std::vector<std::string>            factories,
@@ -58,7 +69,7 @@ std::map<std::string, unsigned int> cities,
     set_route(); //create correct route 
     for(const auto& factory: factories){
       set_doses_needed(factory); 
-      std::cout<<factory<<" needs "<<mCities[factory]->doses_needed<<'\n';
+      //std::cout<<factory<<" needs "<<mCities[factory]->doses_needed<<'\n';
     }
 }
 void MyScheduler::set_route(){
@@ -81,18 +92,18 @@ void MyScheduler::set_route(){
   }
   //std::cout<<"made it out"<<'\n';
   while(!possibleRoutes.empty()){
-    for(std::string list : namecheck){
-      std::cout<<list;
-    }
-    std::cout<<'\n';
-    std::cout<<possibleRoutes.top()->in<<'\n';
+    // for(std::string list : namecheck){
+    //   std::cout<<list;
+    // }
+    // std::cout<<'\n';
+    // std::cout<<possibleRoutes.top()->in<<'\n';
     if(!in_city_two(possibleRoutes.top()->in)){//possiblity: pops mati and mamburao has already been popped, for tandag those are the only cities connected to it
       namecheck.insert(possibleRoutes.top()->in);
-      std::cout<<"Name of city being viewed: "<<possibleRoutes.top()->in<<'\n';
+      //std::cout<<"Name of city being viewed: "<<possibleRoutes.top()->in<<'\n';
       std::string in = possibleRoutes.top()->in;
       std::string out = possibleRoutes.top()->out; 
       iRoute* xroute = possibleRoutes.top();
-      std::cout<<"Name of source city: "<<possibleRoutes.top()->out<<'\n';
+      // std::cout<<"Name of source city: "<<possibleRoutes.top()->out<<'\n';
       mCities[out]->correctroute.insert(possibleRoutes.top());
       //correctroute[out]=possibleRoutes.top();
       for(Route* edge : mCities[in]->edges){//the city at the road we chose directs to 
@@ -104,23 +115,25 @@ void MyScheduler::set_route(){
           else 
             info.in =edge->city1; 
           info.totalDays = edge->days+xroute->totalDays;
-          std::cout<<"City: "<<info.in<<'\n';
-          std::cout<<info.totalDays<<'\n';
+          // std::cout<<"City: "<<info.in<<'\n';
+          // std::cout<<info.totalDays<<'\n';
           info.id = edge->id; 
           possibleRoutes.push(new iRoute(info));
         }
       }
     }
-    else
+    else{
+      //delete possibleRoutes.top();
       possibleRoutes.pop();
-  }
-  for(const auto& [name,city]: mCities){
-    (void) city;
-    for(iRoute* xroute: mCities[name]->correctroute){//trying to access routes. so if 
-      //std::cout<<city->doses_needed<<" Doses needed in "<<name<<'\n';
-      std::cout<<name<<" has roads leading to "<<xroute->in<<'\n';
     }
   }
+  // for(const auto& [name,city]: mCities){
+  //   (void) city;
+  //   for(iRoute* xroute: mCities[name]->correctroute){//trying to access routes. so if 
+  //     //std::cout<<city->doses_needed<<" Doses needed in "<<name<<'\n';
+  //     std::cout<<name<<" has roads leading to "<<xroute->in<<'\n';
+  //   }
+  // }
 }
 bool MyScheduler::in_city_two(std::string name){
   for(std::string list : namecheck){

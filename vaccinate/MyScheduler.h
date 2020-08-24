@@ -55,6 +55,7 @@ public:
   std::vector<Route>                  routes); 
   //City(std::string name, unsigned int population);
   // Destructor?
+  ~MyScheduler();
 
   // Required Member Function
   std::vector<Shipment> schedule();
