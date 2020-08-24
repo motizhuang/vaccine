@@ -108,6 +108,7 @@ void MyScheduler::set_route(){
   }
   for(const auto& [name,route]: correctroute){
     std::cout<<"City names: "<<name<<'\n';
+    (void) route; 
   }
   std::cout<<"made it out"<<'\n';
   for(std::string list : namecheck){
