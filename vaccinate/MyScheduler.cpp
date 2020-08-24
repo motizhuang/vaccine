@@ -79,16 +79,22 @@ void MyScheduler::set_route(){
     }
     namecheck.insert(factories); 
   }
-  std::cout<<"made it out"<<'\n';
+  //std::cout<<"made it out"<<'\n';
   while(!possibleRoutes.empty()){
-    if(!in_city_two(possibleRoutes.top()->in)){
+    for(std::string list : namecheck){
+      std::cout<<list;
+    }
+    std::cout<<'\n';
+    std::cout<<possibleRoutes.top()->in<<'\n';
+    if(!in_city_two(possibleRoutes.top()->in)){//possiblity: pops mati and mamburao has already been popped, for tandag those are the only cities connected to it
       namecheck.insert(possibleRoutes.top()->in);
       std::cout<<"Name of city being viewed: "<<possibleRoutes.top()->in<<'\n';
       std::string in = possibleRoutes.top()->in;
       std::string out = possibleRoutes.top()->out; 
+      iRoute* xroute = possibleRoutes.top();
       std::cout<<"Name of source city: "<<possibleRoutes.top()->out<<'\n';
       mCities[out]->correctroute.insert(possibleRoutes.top());
-      correctroute[out]=possibleRoutes.top();
+      //correctroute[out]=possibleRoutes.top();
       for(Route* edge : mCities[in]->edges){//the city at the road we chose directs to 
         iRoute info; //need to make sure don't go backwards
         if(edge->city1!=out&&edge->city2!=out){
@@ -97,7 +103,9 @@ void MyScheduler::set_route(){
             info.in = edge->city2; 
           else 
             info.in =edge->city1; 
-          info.totalDays = edge->days+correctroute[out]->totalDays;
+          info.totalDays = edge->days+xroute->totalDays;
+          std::cout<<"City: "<<info.in<<'\n';
+          std::cout<<info.totalDays<<'\n';
           info.id = edge->id; 
           possibleRoutes.push(new iRoute(info));
         }

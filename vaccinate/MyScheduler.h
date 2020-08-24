@@ -34,7 +34,7 @@ class MyScheduler: public Scheduler {
     /*if(a == nullptr || b == nullptr) {
       throw std::invalid_argument("Null pointer in result set.");
     }*/
-    return a->totalDays < b->totalDays;
+    return a->totalDays > b->totalDays;
     }
   };
   // Member Variables
