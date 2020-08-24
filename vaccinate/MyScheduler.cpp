@@ -107,6 +107,7 @@ void MyScheduler::set_route(){
       possibleRoutes.pop();
   }
   for(const auto& [name,city]: mCities){
+    (void) city;
     for(iRoute* xroute: mCities[name]->correctroute){//trying to access routes. so if 
       //std::cout<<city->doses_needed<<" Doses needed in "<<name<<'\n';
       std::cout<<name<<" has roads leading to "<<xroute->in<<'\n';
