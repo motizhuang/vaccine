@@ -152,6 +152,7 @@ std::vector<Shipment> MyScheduler::schedule(){
   unsigned int thisday =0; 
   while(thisday-1!=mDeadline){//because can deliver on the day of deadline
     for(const auto& [name,city]: mCities){
+      (void) city;
       //std::cout<<"where it's going: "<<route->in<<" where it's coming from: "<<route->out<<'\n';
       if(thisday==0)
         if(name_is_factory(name)){//shipments being sent on day 1
