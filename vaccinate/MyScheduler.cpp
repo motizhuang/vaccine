@@ -106,9 +106,9 @@ void MyScheduler::set_route(){
   for(std::string list : namecheck){
     std::cout<<"namecheck: "<<list<<'\n';
   }
-  for(iRoute* xroute: mCities["Cadiz"]->correctroute){//trying to access routes. so if 
-    std::cout<<"Cadiz correctroutes: "<<xroute->in<<'\n';
-  }
+  // for(iRoute* xroute: mCities["Cadiz"]->correctroute){//trying to access routes. so if 
+  //   std::cout<<"Cadiz correctroutes: "<<xroute->in<<'\n';
+  // }
 }
 bool MyScheduler::in_city_two(std::string name){
   for(std::string list : namecheck){
@@ -154,25 +154,27 @@ std::vector<Shipment> MyScheduler::schedule(){
     for(const auto& [name,city]: mCities){
       //std::cout<<"where it's going: "<<route->in<<" where it's coming from: "<<route->out<<'\n';
       if(thisday==0)
-      if(name_is_factory(name)){//shipments being sent on day 1
-        for(iRoute* route: mCities[name]->correctroute/* const auto& [mname,mroute]: correctroute*/){
-          Shipment mshipment; 
-          mshipment.route_id = route->id; 
-          mshipment.source = name; 
-          mshipment.day = 0;
-          mshipment.day=route->totalDays; // double check this 
-          mshipment.doses=mCities[route->in]->doses_needed; //total_doses(name); //doesn't seem to be working, wait you don't even know which one this is...
-          // std::cout<<"total doses sent: "<<mshipment.doses<<'\n';
-          // std::cout<<"where it's going: "<<mroute->in<<" with route totalTime of: "<<mroute->totalDays<<'\n';
-          // std::cout<<"where it's coming from: "<<mroute->out<<'\n';
-          route->doses=mshipment.doses; 
-          mSchedule.push_back(mshipment); //could make a priority queue and pushback 
-            
-        //std::cout<<route->id<<" shipment doses "<<mshipment.doses<<'\n';
-        // for(const auto& [name,route]: correctroute)
-        // std::cout<<"Route ID "<<route->id<<"'s totalDays: "<<route->totalDays<<" carrying "<<route->doses<<" doses."<<'\n';
+        if(name_is_factory(name)){//shipments being sent on day 1
+          for(iRoute* route: mCities[name]->correctroute/* const auto& [mname,mroute]: correctroute*/){
+            std::cout<<"NEW SHIPMENT"<<'\n';
+            Shipment mshipment; 
+            mshipment.route_id = route->id; 
+            mshipment.source = name; 
+            mshipment.day = 0;
+            mshipment.day=route->totalDays; // double check this 
+            mshipment.doses=mCities[route->in]->doses_needed; //total_doses(name); //doesn't seem to be working, wait you don't even know which one this is...
+            std::cout<<"total doses sent: "<<mshipment.doses<<'\n';
+            std::cout<<"where it's going: "<<route->in<<" with route totalTime of: "<<route->totalDays<<'\n';
+            std::cout<<"where it's coming from: "<<route->out<<'\n';
+            std::cout<<"TODAY IS: "<<thisday<<'\n';
+            route->doses=mshipment.doses; 
+            mSchedule.push_back(mshipment); //could make a priority queue and pushback 
+              
+          //std::cout<<route->id<<" shipment doses "<<mshipment.doses<<'\n';
+          // for(const auto& [name,route]: correctroute)
+          // std::cout<<"Route ID "<<route->id<<"'s totalDays: "<<route->totalDays<<" carrying "<<route->doses<<" doses."<<'\n';
+          }
         }
-      }
       for(iRoute* route: mCities[name]->correctroute)
         if(thisday == route->totalDays) {
           
@@ -197,6 +199,7 @@ std::vector<Shipment> MyScheduler::schedule(){
     }
     thisday+=1;  
   }
+  std::cout<<"DEADLINE: "<<mDeadline<<'\n';
   return mSchedule; 
 }
 /*bool have_enough_doses(){
