@@ -119,6 +119,7 @@ void Validator::validate(std::vector<Shipment>& shipments) {
       City&  dst = destination(shipment);
 
       if(src.vaccines < shipment.doses && !src.factory) {
+        std::cout<<"What you're missing: "<<shipment.doses-src.vaccines<<'\n';
         throw validation_error("Not enough doses in " + src.name + " to ship.");
       }
 
