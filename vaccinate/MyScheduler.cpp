@@ -55,7 +55,8 @@ std::map<std::string, unsigned int> cities,
     }
     std::cout<<"made it out"<<'\n';
     set_route(); //create correct route 
-
+    for(const auto& factory: factories)
+    set_doses_needed(factory); 
 }
 void MyScheduler::set_route(){
   //for(const auto& [name,pop] : mCities){
@@ -69,7 +70,7 @@ void MyScheduler::set_route(){
       else
         info.in = edge->city1; 
       // std::cout<<"route ends: "<<info.out<<'\n';
-      info.totalDays = edge->days-1;  
+      info.totalDays = edge->days;  
       info.id = edge->id; 
       possibleRoutes.push(new iRoute(info)); 
     }
@@ -79,9 +80,12 @@ void MyScheduler::set_route(){
   while(!possibleRoutes.empty()){
     if(!in_city_two(possibleRoutes.top()->in)){
       namecheck.insert(possibleRoutes.top()->in);
+      std::cout<<"Name of city being viewed: "<<possibleRoutes.top()->in<<'\n';
       std::string in = possibleRoutes.top()->in;
       std::string out = possibleRoutes.top()->out; 
-      correctroute[possibleRoutes.top()->out]=possibleRoutes.top();
+      std::cout<<"Name of source city: "<<possibleRoutes.top()->out<<'\n';
+      mCities[out]->correctroute.insert(possibleRoutes.top());
+      correctroute[out]=possibleRoutes.top();
       for(Route* edge : mCities[in]->edges){//the city at the road we chose directs to 
         iRoute info; //need to make sure don't go backwards
         if(edge->city1!=out&&edge->city2!=out){
@@ -90,7 +94,7 @@ void MyScheduler::set_route(){
             info.in = edge->city2; 
           else 
             info.in =edge->city1; 
-          info.totalDays = edge->days-1+correctroute[out]->totalDays;//edge needs to be updated. totaldays is already updated. 
+          info.totalDays = edge->days+correctroute[out]->totalDays;
           info.id = edge->id; 
           possibleRoutes.push(new iRoute(info));
         }
@@ -98,6 +102,12 @@ void MyScheduler::set_route(){
     }
     else
       possibleRoutes.pop();
+  }
+  for(std::string list : namecheck){
+    std::cout<<"namecheck: "<<list<<'\n';
+  }
+  for(iRoute* xroute: mCities["Cadiz"]->correctroute){//trying to access routes. so if 
+    std::cout<<"Cadiz correctroutes: "<<xroute->in<<'\n';
   }
 }
 bool MyScheduler::in_city_two(std::string name){
@@ -116,58 +126,76 @@ bool MyScheduler::name_is_factory(std::string name){
   //std::cout<<"made it out name is factory"<<'\n';
   return false; 
 }
-unsigned int MyScheduler::total_doses(std::string name){//updating the total vaccines in the city
-  int pass=0; 
-  for(const auto& [routename,route]: correctroute){//trying to access routes. so if 
+unsigned int MyScheduler::set_doses_needed(std::string name){//updating the total vaccines in the city
+  //int pass=0; 
+  //for(const auto& [cityname,city]: mCities){
+    if(mCities[name]->correctroute.empty())
+      return mCities[name]->population; 
+  /*for(const auto& [routename,router]: correctroute){//trying to access routes. so if 
     if(name==routename)
       pass++; 
-    (void) route;
+    (void) router;
   }
   if(pass==0){
       return mCities[name]->population;  
-  }
-  unsigned int total = mCities[correctroute[name]->in]->population; 
-  total = total + total_doses(correctroute[name]->in);
-  return total;
+  }*/
+  mCities[name]->doses_needed = mCities[name]->population;
+  for(iRoute* route: mCities[name]->correctroute)
+    mCities[name]->doses_needed += set_doses_needed(route->in);
+  /*for(const auto& [routename,route]: correctroute){
+    if(route->out==name)
+    mCities[name]->doses_needed += set_doses_needed(route->in);
+  }*/
+  return mCities[name]->doses_needed;
 }
 std::vector<Shipment> MyScheduler::schedule(){
   unsigned int thisday =0; 
   while(thisday-1!=mDeadline){//because can deliver on the day of deadline
-    for(const auto& [name,route]: correctroute){
+    for(const auto& [name,city]: mCities){
+      //std::cout<<"where it's going: "<<route->in<<" where it's coming from: "<<route->out<<'\n';
       if(thisday==0)
-        if(name_is_factory(name)){//shipments being sent on day 1
+      if(name_is_factory(name)){//shipments being sent on day 1
+        for(iRoute* route: mCities[name]->correctroute/* const auto& [mname,mroute]: correctroute*/){
           Shipment mshipment; 
           mshipment.route_id = route->id; 
           mshipment.source = name; 
-          mshipment.day = 0; 
-          mshipment.doses=total_doses(name); //doesn't seem to be working
+          mshipment.day = 0;
+          mshipment.day=route->totalDays; // double check this 
+          mshipment.doses=mCities[route->in]->doses_needed; //total_doses(name); //doesn't seem to be working, wait you don't even know which one this is...
+          // std::cout<<"total doses sent: "<<mshipment.doses<<'\n';
+          // std::cout<<"where it's going: "<<mroute->in<<" with route totalTime of: "<<mroute->totalDays<<'\n';
+          // std::cout<<"where it's coming from: "<<mroute->out<<'\n';
           route->doses=mshipment.doses; 
-          mSchedule.push_back(mshipment); 
-          //std::cout<<route->id<<" shipment doses "<<mshipment.doses<<'\n';
-          // for(const auto& [name,route]: correctroute)
-          // std::cout<<"Route ID "<<route->id<<"'s totalDays: "<<route->totalDays<<" carrying "<<route->doses<<" doses."<<'\n';
+          mSchedule.push_back(mshipment); //could make a priority queue and pushback 
+            
+        //std::cout<<route->id<<" shipment doses "<<mshipment.doses<<'\n';
+        // for(const auto& [name,route]: correctroute)
+        // std::cout<<"Route ID "<<route->id<<"'s totalDays: "<<route->totalDays<<" carrying "<<route->doses<<" doses."<<'\n';
         }
-      if(thisday == route->totalDays) {
-        mCities[route->in]->vaccines = route->doses; 
-        int pass=0; 
-        for(const auto& [routename,router]: correctroute){//trying to access routes. so if 
-          if(route->in==routename)
-            pass++; 
-          (void) router;
-        }
-        if(pass!=0){
-          Shipment mshipment; 
-          mshipment.route_id = correctroute[route->in]->id; 
-          mshipment.source = route->in; 
-          mshipment.day = thisday; 
-          mshipment.doses=mCities[route->in]->vaccines-mCities[route->in]->population; //route->in is the city we are talking about 
-          correctroute[route->in]->doses=mshipment.doses; 
-          mSchedule.push_back(mshipment); 
-        }
-        
       }
+      for(iRoute* route: mCities[name]->correctroute)
+        if(thisday == route->totalDays) {
+          
+          for(iRoute* newroute: mCities[route->in]->correctroute){
+            std::cout<<"NEW SHIPMENT"<<'\n';
+            std::cout<<"where it's going to: "<<newroute->in<<'\n';
+            
+          std::cout<<"what time: "<<thisday<<'\n';
+          std::cout<<"where it's coming from: "<<newroute->out<<'\n';
+            Shipment mshipment; 
+            mshipment.route_id = newroute->id; 
+            mshipment.source = newroute->out; 
+            mshipment.day = thisday; 
+            mshipment.doses=mCities[newroute->in]->doses_needed; //route->in is the city we are talking about 
+            //std::cout<<mshipment.doses<<'\n';
+        
+            newroute->doses=mshipment.doses; 
+            std::cout<<"shipping this much: "<<newroute->doses<<'\n';
+            mSchedule.push_back(mshipment); 
+          }
+        }
     }
-  thisday+=1;  
+    thisday+=1;  
   }
   return mSchedule; 
 }

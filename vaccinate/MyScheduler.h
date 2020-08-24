@@ -10,14 +10,7 @@
 #include <set> 
 
 class MyScheduler: public Scheduler {
-  struct City{
-    //City(std::string name, unsigned int population);
-    std::string name; 
-    unsigned int population; 
-    std::set<Route*> edges; 
-    bool          factory;
-    unsigned int  vaccines;
-  };
+  
   
   struct iRoute{
     std::string out; 
@@ -25,6 +18,16 @@ class MyScheduler: public Scheduler {
     unsigned int totalDays; 
     unsigned int id; 
     unsigned int doses; 
+  };
+  struct City{
+    //City(std::string name, unsigned int population);
+    std::string name; 
+    unsigned int population; 
+    std::set<Route*> edges; 
+    bool          factory;
+    unsigned int  vaccines;
+    unsigned int doses_needed;
+    std::set<iRoute*> correctroute;  
   };
   struct Compare {
     bool operator () (const iRoute* a, const iRoute* b) const {
@@ -58,7 +61,7 @@ public:
   bool in_city_two(std::string name);
   bool name_is_factory(std::string name);
   void set_route();
-  unsigned int total_doses(std::string name); 
+  unsigned int set_doses_needed(std::string name); 
 };
 
 #endif
