@@ -21,6 +21,9 @@ MyScheduler::~MyScheduler(){
     (void) name; 
     /*for(iRoute* route: city->correctroute)
       delete route; */
+    for(Route* route: city->edges){
+      delete route; 
+    }
     delete city; 
   }
   /*for(const auto& route: mRoutes){
