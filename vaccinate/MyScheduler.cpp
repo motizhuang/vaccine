@@ -48,7 +48,6 @@ std::map<std::string, unsigned int> cities,
       //info.vaccines=0;
       info.doses_needed=info.population;
       info.count=0;
-      info.mapped = false; 
       mCities[name]=new City(info);
       //mCities[name] = new MyScheduler::City::City(name, pop);
     }
@@ -99,9 +98,8 @@ void MyScheduler::set_route(){
     // std::cout<<'\n';
     // std::cout<<possibleRoutes.top()->in<<'\n';
     //could create a boolean in city to save time, but doesn't really work when put on gradescope. actually worsens the cost while it's at it 
-    if(mCities[possibleRoutes.top()->in]->mapped==false/*!in_city_two(possibleRoutes.top()->in)*/){//possiblity: pops mati and mamburao has already been popped, for tandag those are the only cities connected to it
-      //namecheck.insert(possibleRoutes.top()->in);
-      mCities[possibleRoutes.top()->in]->mapped=true; 
+    if(!in_city_two(possibleRoutes.top()->in)){//possiblity: pops mati and mamburao has already been popped, for tandag those are the only cities connected to it
+      namecheck.insert(possibleRoutes.top()->in);
       //std::cout<<"Name of city being viewed: "<<possibleRoutes.top()->in<<'\n';
       std::string in = possibleRoutes.top()->in;
       std::string out = possibleRoutes.top()->out; 
