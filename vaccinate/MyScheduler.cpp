@@ -19,13 +19,13 @@ Scheduler* Scheduler::create(
 MyScheduler::~MyScheduler(){
   for(const auto& [name,city] : mCities){
     (void) name; 
-    for(iRoute* route: city->correctroute)
-      delete route; 
+    /*for(iRoute* route: city->correctroute)
+      delete route; */
     delete city; 
   }
-  for(const auto& route: mRoutes){
+  /*for(const auto& route: mRoutes){
     delete route; 
-  }
+  }*/
 }
 MyScheduler::MyScheduler(unsigned int deadline,
 std::map<std::string, unsigned int> cities,
@@ -52,6 +52,7 @@ std::map<std::string, unsigned int> cities,
       //std::set<Route*> edges; 
       //info.factory=false;
       //info.vaccines=0;
+      info.mapped = false;
       info.doses_needed=info.population;
       mCities[name]=new City(info);
       //mCities[name] = new MyScheduler::City::City(name, pop);
@@ -92,13 +93,9 @@ void MyScheduler::set_route(){
   }
   //std::cout<<"made it out"<<'\n';
   while(!possibleRoutes.empty()){
-    // for(std::string list : namecheck){
-    //   std::cout<<list;
-    // }
-    // std::cout<<'\n';
-    // std::cout<<possibleRoutes.top()->in<<'\n';
-    if(!in_city_two(possibleRoutes.top()->in)){//possiblity: pops mati and mamburao has already been popped, for tandag those are the only cities connected to it
-      namecheck.insert(possibleRoutes.top()->in);
+    if(!mCities[possibleRoutes.top()->in]->mapped){//possiblity: pops mati and mamburao has already been popped, for tandag those are the only cities connected to it
+      //namecheck.insert(possibleRoutes.top()->in);
+      mCities[possibleRoutes.top()->in]->mapped=true; 
       //std::cout<<"Name of city being viewed: "<<possibleRoutes.top()->in<<'\n';
       std::string in = possibleRoutes.top()->in;
       std::string out = possibleRoutes.top()->out; 
@@ -123,10 +120,14 @@ void MyScheduler::set_route(){
       }
     }
     else{
+      std::cout<<"before delete: "<<possibleRoutes.top()->in<<'\n';
       //delete possibleRoutes.top();
+      std::cout<<"after delete"<<possibleRoutes.top()->in<<'\n';
       possibleRoutes.pop();
+      std::cout<<"After pop: "<<possibleRoutes.top()->in<<'\n';
     }
   }
+
   // for(const auto& [name,city]: mCities){
   //   (void) city;
   //   for(iRoute* xroute: mCities[name]->correctroute){//trying to access routes. so if 

@@ -28,6 +28,7 @@ class MyScheduler: public Scheduler {
     unsigned int  vaccines;
     unsigned int doses_needed;
     std::set<iRoute*> correctroute;  
+    bool mapped; 
   };
   struct Compare {
     bool operator () (const iRoute* a, const iRoute* b) const {
