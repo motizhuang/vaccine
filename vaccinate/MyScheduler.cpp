@@ -23,9 +23,12 @@ MyScheduler::~MyScheduler(){
       delete route; */
     delete city; 
   }
-  /*for(const auto& route: mRoutes){
+  for(const auto& t: todelete){
+    delete t; 
+  }
+  for(const auto& route: mRoutes){
     delete route; 
-  }*/
+  }
 }
 MyScheduler::MyScheduler(unsigned int deadline,
 std::map<std::string, unsigned int> cities,
@@ -61,10 +64,10 @@ std::map<std::string, unsigned int> cities,
           mCities[name]->edges.insert(route); 
         }
       }
-      for(const auto& factory: factories){
+      /*for(const auto& factory: factories){
         if(name==factory)
         mCities[name]->factory = true; 
-      }
+      }*/
     }
     std::cout<<"made it out"<<'\n';
     set_route(); //create correct route 
@@ -89,7 +92,7 @@ void MyScheduler::set_route(){
       info.id = edge->id; 
       possibleRoutes.push(new iRoute(info)); 
     }
-    namecheck.insert(factories); 
+    //namecheck.insert(factories); 
   }
   //std::cout<<"made it out"<<'\n';
   while(!possibleRoutes.empty()){
@@ -122,6 +125,7 @@ void MyScheduler::set_route(){
     else{
       std::cout<<"before delete: "<<possibleRoutes.top()->in<<'\n';
       //delete possibleRoutes.top();
+      todelete.push_back(possibleRoutes.top());
       std::cout<<"after delete"<<possibleRoutes.top()->in<<'\n';
       possibleRoutes.pop();
       std::cout<<"After pop: "<<possibleRoutes.top()->in<<'\n';
@@ -153,8 +157,8 @@ bool MyScheduler::name_is_factory(std::string name){
   return false; 
 }
 unsigned int MyScheduler::set_doses_needed(std::string name){//updating the total vaccines in the city
-    if(mCities[name]->correctroute.empty())
-      return mCities[name]->population; 
+  if(mCities[name]->correctroute.empty())
+    return mCities[name]->population; 
   mCities[name]->doses_needed = mCities[name]->population;
   //std::cout<<name<<"needs"<<mCities[name]->doses_needed<<'\n';
   for(iRoute* route: mCities[name]->correctroute)
@@ -165,7 +169,6 @@ std::vector<Shipment> MyScheduler::schedule(){
   unsigned int thisday =0; 
   while(thisday-1!=mDeadline){//because can deliver on the day of deadline
     for(const auto& [name,city]: mCities){
-      (void) city;
       //std::cout<<"where it's going: "<<route->in<<" where it's coming from: "<<route->out<<'\n';
       if(thisday==0)
         if(name_is_factory(name)){//shipments being sent on day 1
@@ -189,7 +192,7 @@ std::vector<Shipment> MyScheduler::schedule(){
           // std::cout<<"Route ID "<<route->id<<"'s totalDays: "<<route->totalDays<<" carrying "<<route->doses<<" doses."<<'\n';
           }
         }
-      for(iRoute* route: mCities[name]->correctroute)
+      for(iRoute* route: city->correctroute)
         if(thisday == route->totalDays) {
           
           for(iRoute* newroute: mCities[route->in]->correctroute){

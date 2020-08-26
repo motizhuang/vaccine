@@ -39,6 +39,7 @@ class MyScheduler: public Scheduler {
     }
   };
   // Member Variables
+  std::vector<iRoute*> todelete; 
   unsigned int                        mDeadline;
   std::map<std::string, City*> mCities;
   std::map<std::string, iRoute*> correctroute;
