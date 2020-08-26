@@ -30,6 +30,7 @@ class MyScheduler: public Scheduler {
     std::set<iRoute*> correctroute;  
     bool mapped; 
     unsigned int count; 
+    std::map<unsigned int, iRoute*> bestroute; 
   };
   struct Compare {
     bool operator () (const iRoute* a, const iRoute* b) const {
