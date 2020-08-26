@@ -19,12 +19,15 @@ Scheduler* Scheduler::create(
 MyScheduler::~MyScheduler(){
   for(const auto& [name,city] : mCities){
     (void) name; 
-    for(iRoute* route: city->correctroute)
-      delete route; 
+    /*for(iRoute* route: city->correctroute)
+      delete route; */
     delete city; 
   }
   for(const auto& route: mRoutes){
     delete route; 
+  }
+  for(const auto& need: todelete){
+    delete need; 
   }
 }
 MyScheduler::MyScheduler(unsigned int deadline,
@@ -124,6 +127,7 @@ void MyScheduler::set_route(){
     }
     else{
       //delete possibleRoutes.top();
+      todelete.push_back(possibleRoutes.top());
       possibleRoutes.pop();
     }
   }
