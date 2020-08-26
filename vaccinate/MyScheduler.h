@@ -64,7 +64,7 @@ public:
 
   // Required Member Function
   std::vector<Shipment> schedule();
-  bool in_city_two(std::string name);
+  bool in_city_two(const std::string& name);
   bool name_is_factory(std::string name);
   void set_route();
   unsigned int set_doses_needed(std::string name); 
