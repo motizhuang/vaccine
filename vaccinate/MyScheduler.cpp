@@ -26,9 +26,9 @@ MyScheduler::~MyScheduler(){
   for(const auto& t: todelete){
     delete t; 
   }
-  for(const auto& route: mRoutes){
+  /*for(const auto& route: mRoutes){
     delete route; 
-  }
+  }*/
 }
 MyScheduler::MyScheduler(unsigned int deadline,
 std::map<std::string, unsigned int> cities,
@@ -36,18 +36,6 @@ std::map<std::string, unsigned int> cities,
   std::vector<Route>                  routes){
     mDeadline = deadline;  
     mFactories = factories; 
-    for(const auto& mroute: routes){//create routes 
-      Route info; 
-      info.id=mroute.id; 
-      info.city1=mroute.city1;
-      info.city2=mroute.city2; 
-      info.days=mroute.days;
-      info.load=mroute.load;
-      info.cost=mroute.cost; 
-      mRoutes.push_back(new Route(info));
-      //std::cout<<info.id<<'\n';
-    }
-    std::cout<<"made it out"<<'\n';
     for(const auto& [name, pop]: cities) {//create cities 
       City info; 
       info.name=name; 
@@ -59,16 +47,31 @@ std::map<std::string, unsigned int> cities,
       info.doses_needed=info.population;
       mCities[name]=new City(info);
       //mCities[name] = new MyScheduler::City::City(name, pop);
-      for(const auto& route: mRoutes){
+      /*for(const auto& route: mRoutes){
         if(route->city1==name||route->city2==name){
           mCities[name]->edges.insert(route); 
         }
-      }
+      }*/
       /*for(const auto& factory: factories){
         if(name==factory)
         mCities[name]->factory = true; 
       }*/
     }
+    for(const auto& mroute: routes){//create routes 
+      Route info; 
+      info.id=mroute.id; 
+      info.city1=mroute.city1;
+      info.city2=mroute.city2; 
+      info.days=mroute.days;
+      info.load=mroute.load;
+      info.cost=mroute.cost; 
+      //mRoutes.push_back(new Route(info));
+      mCities[info.city1]->edges.insert(new Route(info));
+      mCities[info.city2]->edges.insert(new Route(info));
+      //std::cout<<info.id<<'\n';
+    }
+    std::cout<<"made it out"<<'\n';
+    
     std::cout<<"made it out"<<'\n';
     set_route(); //create correct route 
     for(const auto& factory: factories){
@@ -193,14 +196,9 @@ std::vector<Shipment> MyScheduler::schedule(){
         }
           //}
       for(std::string name: receiving){
-        std::cout<<name<<'\n';
         mCities[name]->count=0; 
         for(iRoute* newroute: mCities[name]->correctroute){
-          std::cout<<newroute->in<<'\n';
           if(thisday>newroute->totalDays){
-            std::cout<<thisday<<'\n';
-            std::cout<<newroute->totalDays<<'\n';
-            //std::cout<<count<<'\n';
             mCities[name]->count+=1; 
           }
           if(thisday == newroute->totalDays) {
@@ -237,7 +235,7 @@ std::vector<Shipment> MyScheduler::schedule(){
         receiving.erase(name);
       }
       temp.clear();
-      std::cout<<"how many times"<<'\n';
+      //std::cout<<"how many times"<<'\n';
       /*for(iRoute* route: city->correctroute)
         if(thisday == route->totalDays) {
           
