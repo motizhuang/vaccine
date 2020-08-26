@@ -29,6 +29,7 @@ class MyScheduler: public Scheduler {
     unsigned int doses_needed;
     std::set<iRoute*> correctroute;  
     bool mapped; 
+    unsigned int count; 
   };
   struct Compare {
     bool operator () (const iRoute* a, const iRoute* b) const {
@@ -49,6 +50,7 @@ class MyScheduler: public Scheduler {
   std::priority_queue<iRoute*,std::vector<iRoute*> ,Compare> possibleRoutes;
   std::set<std::string> namecheck;  
   std::set<std::string> nextcities; 
+  std::set<std::string> receiving; 
 public:
   // Constructor
   MyScheduler(unsigned int deadline,
