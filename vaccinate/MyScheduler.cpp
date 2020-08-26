@@ -23,9 +23,9 @@ MyScheduler::~MyScheduler(){
       delete route; */
     delete city; 
   }
-  for(const auto& route: mRoutes){
+  /*for(const auto& route: mRoutes){
     delete route; 
-  }
+  }*/
   for(const auto& need: todelete){
     delete need; 
   }
@@ -36,18 +36,6 @@ std::map<std::string, unsigned int> cities,
   std::vector<Route>                  routes){
     mDeadline = deadline;  
     mFactories = factories; 
-    for(const auto& mroute: routes){//create routes 
-      Route info; 
-      info.id=mroute.id; 
-      info.city1=mroute.city1;
-      info.city2=mroute.city2; 
-      info.days=mroute.days;
-      info.load=mroute.load;
-      info.cost=mroute.cost; 
-      mRoutes.push_back(new Route(info));
-      //std::cout<<info.id<<'\n';
-    }
-    std::cout<<"made it out"<<'\n';
     for(const auto& [name, pop]: cities) {//create cities 
       City info; 
       info.name=name; 
@@ -58,16 +46,21 @@ std::map<std::string, unsigned int> cities,
       info.doses_needed=info.population;
       mCities[name]=new City(info);
       //mCities[name] = new MyScheduler::City::City(name, pop);
-      for(const auto& route: mRoutes){
-        if(route->city1==name||route->city2==name){
-          mCities[name]->edges.insert(route); 
-        }
-      }
-      for(const auto& factory: factories){
-        if(name==factory)
-        mCities[name]->factory = true; 
-      }
     }
+    for(const auto& mroute: routes){//create routes 
+      Route info; 
+      info.id=mroute.id; 
+      info.city1=mroute.city1;
+      info.city2=mroute.city2; 
+      info.days=mroute.days;
+      info.load=mroute.load;
+      info.cost=mroute.cost; 
+      mCities[info.city1]->edges.insert(new Route(info));
+      mCities[info.city2]->edges.insert(new Route(info));
+      //std::cout<<info.id<<'\n';
+    }
+    std::cout<<"made it out"<<'\n';
+    
     std::cout<<"made it out"<<'\n';
     set_route(); //create correct route 
     for(const auto& factory: factories){
